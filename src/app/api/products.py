@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, HTTPException
 
 from app.api import crud
@@ -19,3 +21,16 @@ async def create_product(payload: ProductSchema):
         "price": payload.price,
     }
     return response_object
+
+
+@router.get("/{id}/", response_model=ProductDB)
+async def read_product(id: int):
+    product = await crud.get(id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@router.get("/", response_model=List[ProductDB])
+async def read_all_notes():
+    return await crud.get_all()
