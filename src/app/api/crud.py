@@ -21,3 +21,24 @@ async def get(id: int):
 async def get_all():
     query = products.select()
     return await database.fetch_all(query=query)
+
+
+async def put(id: int, payload: ProductSchema):
+    query = (
+        products.update()
+        .where(id == products.c.id)
+        .values(
+            title=payload.title,
+            description=payload.description,
+            category=payload.category,
+            image=payload.image,
+            price=payload.price,
+        )
+        .returning(products.c.id)
+    )
+    return await database.execute(query=query)
+
+
+async def delete(id: int):
+    query = products.delete().where(id == products.c.id)
+    return await database.execute(query=query)
